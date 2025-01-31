@@ -26,15 +26,17 @@ public class ProductController {
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllProducts(){
 
-        List<ProductDto> products=productService.getAllProducts();
-        return ResponseEntity.ok(new ApiResponse("success",products));
+        List<Product> products=productService.getAllProducts();
+        List<ProductDto> connvertedProducts=productService.getConvertedProducts(products);
+        return ResponseEntity.ok(new ApiResponse("success",connvertedProducts));
     }
 
     @GetMapping("product/id/{productId}/product")
     public ResponseEntity<ApiResponse> getProductById(@PathVariable Long productId){
         try {
             Product product=productService.getProductById(productId);
-            return ResponseEntity.ok(new ApiResponse("success",product));
+            ProductDto productDto=productService.convertToDto(product);
+            return ResponseEntity.ok(new ApiResponse("success",productDto));
         } catch (Exception e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }

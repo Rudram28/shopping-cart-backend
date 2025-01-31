@@ -1,5 +1,6 @@
 package com.dailycodework.dreamshops.service.product;
 
+import com.dailycodework.dreamshops.dto.ImageDto;
 import com.dailycodework.dreamshops.dto.ProductDto;
 import com.dailycodework.dreamshops.exception.ResourceNotFoundException;
 import com.dailycodework.dreamshops.model.Category;
@@ -123,8 +124,22 @@ public class ProductService implements IProductService{
         return productRepository.countByBrandAndName(brand,name);
     }
 
+    @Override
+    public List<ProductDto> getConvertedProducts(List<Product> products){
+        return products.stream().map(this::convertToDto).toList();
+    }
+
+    @Override
     public ProductDto convertToDto(Product product){
         ProductDto productDto=modelMapper.map(product, ProductDto.class);
         List<Image> images= imageRepository.findByProductId(product.getId());
+        List<ImageDto> imageDtos=images.stream()
+                .map(image -> modelMapper.map(image,ImageDto.class))
+                .toList();
+
+        productDto.setImages(imageDtos);
+        return productDto;
     }
+
+
 }
